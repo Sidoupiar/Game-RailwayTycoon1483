@@ -411,13 +411,13 @@ class CargoManager {
 				}
 			}
 			const priceMultiplier = this.CalculatePriceMultiplier(cargoType.id, priceMultiplierBase, priceMultiplierRandom);
-			const priceBase = Math.round(cargoType.basePrice * priceMultiplier * (0.9 + Math.random() * 0.5));
+			const priceBase = Math.floor(cargoType.basePrice * priceMultiplier * (0.9 + Math.random() * 0.5));
 			const amount = Math.floor(amountBase + Math.random() * amountRandom);
 			availableCargoList.push({
 				cargoID: cargoType.id,
 				isRare: false,
 				priceBuyBase: priceBase,
-				priceSellBase: Math.min(Math.floor(priceBase * 0.95), Math.round(cargoType.basePrice * priceMultiplier * (0.7 + Math.random() * 0.5))),
+				priceSellBase: Math.floor(Math.min(priceBase * 0.95, cargoType.basePrice * priceMultiplier * (0.7 + Math.random() * 0.5))),
 				amount: amount,
 				amountMax: Math.max(amount, Math.floor(amountBase + Math.random() * amountRandom) + 2),
 			});
