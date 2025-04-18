@@ -1,0 +1,85 @@
+body {
+	background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+	color: white;
+	overflow: hidden;
+}
+
+#gameCanvas {
+	background: linear-gradient(to bottom, #87CEEB 0%, #1E90FF 100%);
+	border-radius: 8px;
+	box-shadow: 0 0 20px rgba(0, 0, 255, 0.5);
+}
+
+.control-panel {
+	background: rgba(26, 32, 44, 0.8);
+	backdrop-filter: blur(10px);
+	border-radius: 8px;
+	box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary {
+	background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+	transition: all 0.3s;
+}
+
+.btn-primary:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+}
+
+.button-control {
+	transition: all 0.3s;
+}
+
+.button-control:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 5px 15px rgba(130, 130, 200, 0.4);
+}
+
+.train-upgrade-item {
+	transition: all 0.3s;
+}
+
+.train-upgrade-item:hover {
+	transform: scale(1.01);
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.h-108 {
+	height: 27rem;
+}
+
+.max-h-108 {
+	max-height: 27rem;
+}
+
+.bg-green-600 {
+	--tw-bg-opacity: 1;
+	background-color: rgba(5, 150, 105, var(--tw-bg-opacity));
+}
+
+.w-60 {
+	width: 15rem;
+}
+
+.max-w-60 {
+	max-width: 15rem;
+}
+
+.notification {
+	position: fixed;
+	top: 25px;
+	right: 20px;
+	background: rgba(0, 0, 0, 0.8);
+	color: white;
+	padding: 15px;
+	border-radius: 5px;
+	z-index: 1000;
+	transform: translateX(140%);
+	transition: transform 0.5s ease;
+	border-left: 4px solid #9d50bb;
+}
+
+.notification.notification-show {
+	transform: translateX(0);
+}

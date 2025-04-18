@@ -1,0 +1,25 @@
+{
+	"name": "railway_tycoon_1483",
+	"version": "1.0.0",
+	"description": "铁路大亨 1483",
+	"main": "main.js",
+	"scripts": {
+		"start": "electron .",
+		"dev:windows": "electron-builder --win --x64 --dir",
+		"pro:windows": "electron-builder --win --x64",
+		"dev:linux": "electron-builder --linux --dir",
+		"pro:linux": "electron-builder --linux",
+		"dev:macos": "electron-builder --macos --dir",
+		"pro:macos": "electron-builder --macos"
+	},
+	"author": "Sidoupiar",
+	"license": "ISC",
+	"devDependencies": {
+		"electron": "^32.1.0",
+		"electron-builder": "^25.0.5"
+	},
+	"dependencies": {
+		"@popperjs/core": "^2.11.8",
+		"bootstrap": "^5.3.3"
+	}
+}

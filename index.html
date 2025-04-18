@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>铁路大亨 1483</title>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="css/game.css">
+</head>
+
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+	<h1
+		class="text-4xl font-bold mb-2 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+		<span>铁路大亨 1483</span>
+	</h1>
+
+	<div class="flex flex-col lg:flex-row gap-6 w-full max-w-6xl">
+		<!-- 控制面板 -->
+		<div class="control-panel p-2 w-full lg:w-80 flex flex-col gap-3">
+			<div class="bg-gray-800 px-4 py-2 rounded-lg">
+				<h2 class="font-semibold mb-2 flex items-center">
+					<i class="fas fa-coins mr-2 text-yellow-400"></i>
+					<span>资金</span>
+				</h2>
+				<p id="moneyDisplay" class="text-xl font-bold text-yellow-400"></p>
+			</div>
+			<div class="bg-gray-800 px-4 py-2 rounded-lg">
+				<h2 class="font-semibold mb-2 flex items-center">
+					<i class="fas fa-train mr-2 text-blue-400"></i>
+					<span>火车控制</span>
+				</h2>
+				<div class="flex flex-col gap-2">
+					<button id="autoDriveButton"
+						class="button-control px-2 py-1 rounded-lg flex items-center justify-center bg-gray-600">
+						<i class="fas fa-robot mr-2"></i>
+						<span>自动驾驶</span>
+					</button>
+					<button id="autoTradeButton"
+						class="button-control px-2 py-1 rounded-lg flex items-center justify-center bg-gray-600">
+						<i class="fas fa-exchange-alt mr-2"></i>
+						<span>自动交易</span>
+					</button>
+					<button id="manualDriveButton"
+						class="btn-primary px-2 py-1 rounded-lg flex items-center justify-center">
+						<i class="fas fa-hand-paper mr-2"></i>
+						<span>手动驾驶</span>
+					</button>
+				</div>
+			</div>
+			<div class="bg-gray-800 px-4 py-2 rounded-lg">
+				<h2 class="font-semibold mb-2 flex items-center">
+					<i class="fas fa-tools mr-2 text-purple-400"></i>
+					<span>火车升级</span>
+				</h2>
+				<div id="upgradeList" class="grid grid-cols-2 gap-2"></div>
+			</div>
+			<div class="bg-gray-800 px-4 py-2 rounded-l">
+				<h2 class="font-semibold mb-2 flex items-center">
+					<i class="fas fa-box-open mr-2 text-green-400"></i>
+					<span id="cargoTitle">货舱&nbsp;0&nbsp;/&nbsp;0</span>
+				</h2>
+				<div id="cargoList" class="h-48 max-h-48 overflow-y-auto"></div>
+			</div>
+		</div>
+
+		<!-- 游戏主区域 -->
+		<div class="flex flex-col gap-3 relative">
+			<canvas id="gameCanvas" width="800" height="230"></canvas>
+			<div id="weatherEffect" class="absolute inset-0 pointer-events-none"></div>
+			<div class="bg-gray-800 px-4 py-2 rounded-lg">
+				<h2 class="font-semibold mb-2 flex items-center">
+					<i class="fas fa-box-open mr-2 text-green-400"></i>
+					<span>货物交易</span>
+				</h2>
+				<div id="stationCargoList" class="h-108 max-h-108 overflow-x-hidden overflow-y-auto"></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 提示通知 -->
+	<div id="notification" class="notification">
+		<div class="notification-title font-bold mb-1"></div>
+		<div class="notification-content"></div>
+	</div>
+
+	<!-- 提示弹窗 -->
+	<div id="dialog" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
+		<div class="bg-gray-800 p-6 rounded-lg max-w-md w-full mx-4">
+			<h3 class="dialog-title text-xl font-bold mb-2">事件发生!</h3>
+			<p class="dialog-content mb-4">这里是事件内容描述...</p>
+			<button class="dialog-button btn-primary px-6 py-2 rounded-lg w-full">确认</button>
+		</div>
+	</div>
+
+	<script src="script/rarity.js"></script>
+	<script src="script/cargo.js"></script>
+	<script src="script/weather.js"></script>
+	<script src="script/event.js"></script>
+	<script src="script/terrain.js"></script>
+	<script src="script/train.js"></script>
+	<script src="script/station.js"></script>
+	<script src="script/game.js"></script>
+</body>
+
+</html>
