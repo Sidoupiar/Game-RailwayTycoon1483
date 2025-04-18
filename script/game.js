@@ -2,7 +2,7 @@ class MainGameManager {
 	constructor() {
 		this.gameSaveID = 'railwayTycoonSave';
 		// 用于清除存档
-		localStorage.setItem(this.gameSaveID, false);
+		//localStorage.setItem(this.gameSaveID, false);
 		// 初始化数据
 		this.money = 20000;
 		this.gameSpeed = 1;
