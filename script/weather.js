@@ -84,6 +84,10 @@ class WeatherManager {
 		this.SetRandomWeather();
 	}
 
+	FinalInit() {
+
+	}
+
 	LoadGame(gameData) {
 		const weatherData = gameData.weatherData || {};
 		this.weatherDurationLeft = weatherData.weatherDurationLeft || 0;
@@ -106,7 +110,7 @@ class WeatherManager {
 		}
 	}
 
-	UpdateUI(canvasElementContext) {
+	UpdateUI() {
 
 	}
 

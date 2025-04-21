@@ -6,21 +6,20 @@ class MainGameManager {
 		// 初始化数据
 		this.money = 20000;
 		this.gameSpeed = 1;
+		this.structureManager = new StructureManager(this);
 		this.rarityManager = new RarityManager(this);
 		this.cargoManager = new CargoManager(this);
 		this.weatherManager = new WeatherManager(this);
 		this.eventManager = new EventManager(this);
 		this.terrainManager = new TerrainManager(this);
-		this.trainManager = new TrainManager(this);
 		this.stationManager = new StationManager(this);
+		this.trainManager = new TrainManager(this);
 		this.Init();
-		this.InitEventListeners();
-		this.UpdateUI();
-		this.GameLoop();
 	}
 
 	Init() {
 		if (!this.LoadGame()) {
+			this.structureManager.Init();
 			this.rarityManager.Init();
 			this.cargoManager.Init();
 			this.weatherManager.Init();
@@ -31,6 +30,28 @@ class MainGameManager {
 			this.SaveGame();
 			this.ApplyWeatherEffect();
 		}
+		document.getElementById('autoDriveButton').addEventListener('click', () => {
+			this.trainManager.SwitchAutoDrive();
+		});
+		document.getElementById('autoTradeButton').addEventListener('click', () => {
+			this.trainManager.SwitchAutoTrade();
+		});
+		document.getElementById('manualDriveButton').addEventListener('click', () => {
+			this.trainManager.SwitchManualDrive();
+		});
+		this.FinalInit();
+		this.GameLoop();
+	}
+
+	FinalInit() {
+		this.structureManager.FinalInit();
+		this.rarityManager.FinalInit();
+		this.cargoManager.FinalInit();
+		this.weatherManager.FinalInit();
+		this.eventManager.FinalInit();
+		this.terrainManager.FinalInit();
+		this.stationManager.FinalInit();
+		this.trainManager.FinalInit();
 	}
 
 	LoadGame() {
@@ -39,6 +60,7 @@ class MainGameManager {
 			const gameData = JSON.parse(savedGame);
 			this.money = gameData.money || 20000;
 			this.gameSpeed = gameData.gameSpeed || 1;
+			this.structureManager.LoadGame(gameData);
 			this.rarityManager.LoadGame(gameData)
 			this.cargoManager.LoadGame(gameData);
 			this.weatherManager.LoadGame(gameData);
@@ -57,6 +79,7 @@ class MainGameManager {
 			money: this.money,
 			gameSpeed: this.gameSpeed,
 		};
+		this.structureManager.SaveGame(gameData);
 		this.rarityManager.SaveGame(gameData);
 		this.cargoManager.SaveGame(gameData);
 		this.weatherManager.SaveGame(gameData);
@@ -65,18 +88,6 @@ class MainGameManager {
 		this.stationManager.SaveGame(gameData);
 		this.trainManager.SaveGame(gameData);
 		localStorage.setItem(this.gameSaveID, JSON.stringify(gameData));
-	}
-
-	InitEventListeners() {
-		document.getElementById('autoDriveButton').addEventListener('click', () => {
-			this.trainManager.SwitchAutoDrive();
-		});
-		document.getElementById('autoTradeButton').addEventListener('click', () => {
-			this.trainManager.SwitchAutoTrade();
-		});
-		document.getElementById('manualDriveButton').addEventListener('click', () => {
-			this.trainManager.SwitchManualDrive();
-		});
 	}
 
 	ApplyDialog(title, content, duration) {
@@ -132,12 +143,13 @@ class MainGameManager {
 	}
 
 	ApplyWeatherEffect() {
-		this.trainManager.ApplyWeatherEffect();
 		this.stationManager.ApplyWeatherEffect();
+		this.trainManager.ApplyWeatherEffect();
 	}
 
 	Update() {
 		const deltaTime = 1;
+		this.structureManager.Update(deltaTime);
 		this.rarityManager.Update(deltaTime);
 		this.cargoManager.Update(deltaTime);
 		this.weatherManager.Update(deltaTime);
@@ -148,16 +160,14 @@ class MainGameManager {
 	}
 
 	UpdateUI() {
-		const canvasElement = document.getElementById('gameCanvas');
-		const canvasElementContext = canvasElement.getContext("2d");
-		canvasElementContext.clearRect(0, 0, canvasElement.width, canvasElement.height)
-		this.trainManager.UpdateUI(canvasElementContext);
-		this.stationManager.UpdateUI(canvasElementContext);
-		this.terrainManager.UpdateUI(canvasElementContext);
-		this.eventManager.UpdateUI(canvasElementContext);
-		this.weatherManager.UpdateUI(canvasElementContext);
-		this.cargoManager.UpdateUI(canvasElementContext);
-		this.rarityManager.UpdateUI(canvasElementContext);
+		this.structureManager.UpdateUI();
+		this.trainManager.UpdateUI();
+		this.stationManager.UpdateUI();
+		this.terrainManager.UpdateUI();
+		this.eventManager.UpdateUI();
+		this.weatherManager.UpdateUI();
+		this.cargoManager.UpdateUI();
+		this.rarityManager.UpdateUI();
 		// 系统界面更新
 		document.getElementById('moneyDisplay').textContent = `$${this.money}`;
 	}
@@ -170,16 +180,6 @@ class MainGameManager {
 		requestAnimationFrame(() => this.GameLoop());
 	}
 
-	MakeElement(baseElement, elementType, className, innerHTML) {
-		const element = document.createElement(elementType);
-		element.className = className;
-		if (innerHTML !== '') {
-			element.innerHTML = innerHTML;
-		}
-		baseElement.appendChild(element);
-		return element;
-	}
-
 	MakeTypeContainer(typeList) {
 		const container = {};
 		for (const type of typeList) {
@@ -188,69 +188,14 @@ class MainGameManager {
 		return container;
 	}
 
-	MakeLocationData(xOffset, yOffset) {
-		return {
-			x: Math.floor(xOffset),
-			y: Math.floor(yOffset),
-		};
-	}
-
-	MakeColorData(red, green, blue, alpha) {
-		return {
-			red: Math.floor(red),
-			green: Math.floor(green),
-			blue: Math.floor(blue),
-			alpha: Math.floor(alpha),
+	MakeElement(baseElement, elementType, className, innerHTML) {
+		const element = document.createElement(elementType);
+		element.className = className;
+		if (innerHTML !== '') {
+			element.innerHTML = innerHTML;
 		}
-	}
-
-	MakeStructureData(xOffset, yOffset, width, height, colorData) {
-		return {
-			xOffset: Math.floor(xOffset),
-			yOffset: Math.floor(yOffset),
-			width: Math.floor(width),
-			height: Math.floor(height),
-			repeatCount: 1,
-			repeatSpace: 0,
-			repeatDirection: 1,
-			color: colorData,
-		};
-	}
-
-	ModifyStructureData_RepeatCount(structureData, repeatCount, repeatSpace, repeatDirection) {
-		structureData.repeatCount = repeatCount;
-		structureData.repeatSpace = repeatSpace;
-		structureData.repeatDirection = repeatDirection;
-		return structureData
-	}
-
-	MakeColorStyle(colorData) {
-		return `rgba(${colorData.red}, ${colorData.green}, ${colorData.blue}, ${colorData.alpha})`;
-	}
-
-	GetStructureDataWidth(structureData) {
-		return structureData.width;
-	}
-
-	DrawStructure(canvasElementContext, locationData, structureData) {
-		if (structureData.repeatCount < 2) {
-			canvasElementContext.fillStyle = this.MakeColorStyle(structureData.color);
-			canvasElementContext.fillRect(locationData.x + structureData.xOffset, locationData.y - structureData.height + structureData.yOffset, structureData.width, structureData.height);
-		} else {
-			let baseX = locationData.x;
-			let baseY = locationData.y;
-			for (let index = 0; index < structureData.repeatCount; ++index) {
-				canvasElementContext.fillStyle = this.MakeColorStyle(structureData.color);
-				canvasElementContext.fillRect(baseX + structureData.xOffset, baseY - structureData.height + structureData.yOffset, structureData.width, structureData.height);
-				if (structureData.repeatDirection !== 0) {
-					if (Math.abs(structureData.repeatDirection) === 1) {
-						baseX += structureData.repeatDirection * structureData.repeatSpace;
-					} else {
-						baseY += structureData.repeatDirection / Math.abs(structureData.repeatDirection) * structureData.repeatSpace;
-					}
-				}
-			}
-		}
+		baseElement.appendChild(element);
+		return element;
 	}
 }
 

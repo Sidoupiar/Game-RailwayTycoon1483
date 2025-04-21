@@ -1,0 +1,220 @@
+class StructureManager {
+	constructor(game) {
+		this.game = game;
+		this.canvasElement = document.getElementById('gameCanvas');
+		this.canvasElementContext = this.canvasElement.getContext("2d");
+		this.structureDrawTypeContainer = {
+			square: {
+				name: '矩形',
+				Draw: function (structureManager, locationData, structureData) {
+					if (structureData.repeatCount < 2) {
+						structureManager.canvasElementContext.fillStyle = structureData.color;
+						structureManager.canvasElementContext.fillRect(locationData.x + structureData.xOffset, locationData.y - structureData.height + structureData.yOffset, structureData.width, structureData.height);
+					} else {
+						let baseX = locationData.x;
+						let baseY = locationData.y;
+						for (let index = 0; index < structureData.repeatCount; ++index) {
+							structureManager.canvasElementContext.fillStyle = structureData.color;
+							structureManager.canvasElementContext.fillRect(baseX + structureData.xOffset, baseY - structureData.height + structureData.yOffset, structureData.width, structureData.height);
+							if (structureData.repeatDirection !== 0) {
+								if (Math.abs(structureData.repeatDirection) === 1) {
+									baseX += structureData.repeatDirection * structureData.repeatSpace;
+								} else {
+									baseY += structureData.repeatDirection / Math.abs(structureData.repeatDirection) * structureData.repeatSpace;
+								}
+							}
+						}
+					}
+				}
+			},
+			sin: {
+				name: '正弦',
+				Draw: function (structureManager, locationData, structureData) {
+					if (structureData.repeatCount < 2) {
+						const innerContent = structureManager.canvasElementContext;
+						const stepX = structureData.width / 100.0;
+						const pi_1_100 = Math.PI / 100.0;
+						const baseX = locationData.x + structureData.xOffset;
+						const baseY = locationData.y + structureData.yOffset;
+						const maxX = baseX + structureData.width;
+						innerContent.beginPath();
+						innerContent.moveTo(baseX, baseY);
+						for (let currentX = baseX, frequency = 0; currentX < maxX; currentX += stepX, frequency += pi_1_100) {
+							const currentY = baseY - structureData.height * Math.sin(frequency);
+							innerContent.lineTo(Math.floor(currentX), Math.floor(currentY));
+						}
+						//innerContent.lineTo(baseX, baseY); // 封底
+						innerContent.fillStyle = structureData.color;
+						innerContent.fill();
+						innerContent.lineWidth = 1;
+						innerContent.strokeStyle = structureData.colorDark;
+						innerContent.stroke();
+						innerContent.closePath();
+					} else {
+						const innerContent = structureManager.canvasElementContext;
+						const stepX = structureData.width / 100.0;
+						const pi_1_100 = Math.PI / 100.0;
+						let baseX = locationData.x + structureData.xOffset;
+						let baseY = locationData.y + structureData.yOffset;
+						let maxX = baseX + structureData.width;
+						for (let index = 0; index < structureData.repeatCount; ++index) {
+							innerContent.beginPath();
+							innerContent.moveTo(baseX, baseY);
+							for (let currentX = baseX, frequency = 0; currentX < maxX; currentX += stepX, frequency += pi_1_100) {
+								const currentY = baseY - structureData.height * Math.sin(frequency);
+								innerContent.lineTo(Math.floor(currentX), Math.floor(currentY));
+							}
+							//innerContent.lineTo(baseX, baseY); // 封底
+							innerContent.fillStyle = structureData.color;
+							innerContent.fill();
+							innerContent.lineWidth = 1;
+							innerContent.strokeStyle = structureData.colorDark;
+							innerContent.stroke();
+							innerContent.closePath();
+							if (structureData.repeatDirection !== 0) {
+								if (Math.abs(structureData.repeatDirection) === 1) {
+									const extendX = structureData.repeatDirection * structureData.repeatSpace;
+									baseX += extendX;
+									maxX += extendX;
+								} else {
+									baseY += structureData.repeatDirection / Math.abs(structureData.repeatDirection) * structureData.repeatSpace;
+								}
+							}
+						}
+					}
+				},
+			},
+		};
+	}
+
+	Init() {
+
+	}
+
+	FinalInit() {
+
+	}
+
+	LoadGame(gameData) {
+		const structureData = gameData.structureData || {};
+	}
+
+	SaveGame(gameData) {
+		gameData.structureData = {};
+	}
+
+	Update(deltaTime) {
+
+	}
+
+	UpdateUI() {
+		this.ClearContent();
+	}
+
+	GetScreenWidth() {
+		return this.canvasElement.width;
+	}
+
+	ClearContent() {
+		this.canvasElementContext.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height)
+	}
+
+	MakeLocationData(xOffset, yOffset) {
+		return {
+			x: Math.floor(xOffset),
+			y: Math.floor(yOffset),
+		};
+	}
+
+	MakeColorData(red, green, blue, alpha) {
+		return {
+			red: Math.floor(red),
+			green: Math.floor(green),
+			blue: Math.floor(blue),
+			alpha: Math.floor(alpha),
+		}
+	}
+
+	MakeColorData_Drak(colorData, darkness) {
+		const colorMultiplier = Math.max(Math.min(1.0 - darkness, 1.0), 0.0);
+		return {
+			red: Math.floor(colorData.red * colorMultiplier),
+			green: Math.floor(colorData.green * colorMultiplier),
+			blue: Math.floor(colorData.blue * colorMultiplier),
+			alpha: colorData.alpha,
+		}
+	}
+
+	MakeStructureData(xOffset, yOffset, width, height, colorData) {
+		return {
+			drawType: 'square',
+			xOffset: Math.floor(xOffset),
+			yOffset: Math.floor(yOffset),
+			width: Math.floor(width),
+			height: Math.floor(height),
+			color: this.MakeColorStyle(colorData),
+			colorDark: this.MakeColorStyle(this.MakeColorData_Drak(colorData, 0.4)),
+			xMerged: 0.0,
+			yMerged: 0.0,
+			repeatCount: 1,
+			repeatSpace: 0,
+			repeatDirection: 1,
+		};
+	}
+
+	ModifyStructureData_DrawType_Square(structureData) {
+		structureData.drawType = 'square';
+		return structureData;
+	}
+
+	ModifyStructureData_DrawType_Sin(structureData) {
+		structureData.drawType = 'sin';
+		return structureData;
+	}
+
+	ModifyStructureData_RepeatCount(structureData, repeatCount, repeatSpace, repeatDirection) {
+		structureData.repeatCount = repeatCount;
+		structureData.repeatSpace = repeatSpace;
+		structureData.repeatDirection = repeatDirection;
+		return structureData;
+	}
+
+	ModifyStructureData_MoveX(structureData, xMerged) {
+		structureData.xMerged += xMerged;
+		if (Math.floor(Math.abs(structureData.xMerged)) > 0) {
+			const xOffset = Math.floor(structureData.xMerged);
+			structureData.xOffset += xOffset;
+			structureData.xMerged -= xOffset;
+		}
+		return structureData;
+	}
+
+	ModifyStructureData_MoveY(structureData, yMerged) {
+		structureData.yMerged += yMerged;
+		if (Math.floor(Math.abs(structureData.yMerged)) > 0) {
+			const yOffset = Math.floor(structureData.yMerged);
+			structureData.yOffset += yOffset;
+			structureData.yMerged -= yOffset;
+		}
+		return structureData;
+	}
+
+	MakeColorStyle(colorData) {
+		return `rgba(${colorData.red}, ${colorData.green}, ${colorData.blue}, ${colorData.alpha})`;
+	}
+
+	GetStructureDataWidth(structureData) {
+		return structureData.width;
+	}
+
+	IsStructureOutOfScreen(structureData, locationData) {
+		return structureData.xOffset + structureData.width < -locationData.x;
+	}
+
+	DrawStructure(locationData, structureData) {
+		const structureDrawType = this.structureDrawTypeContainer[structureData.drawType];
+		if (structureDrawType) {
+			structureDrawType.Draw(this, locationData, structureData);
+		}
+	}
+}

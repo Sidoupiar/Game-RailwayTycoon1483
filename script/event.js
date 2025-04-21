@@ -86,6 +86,10 @@ class EventManager {
 		this.cacheEventEffect = [];
 	}
 
+	FinalInit() {
+
+	}
+
 	LoadGame(gameData) {
 		const eventData = gameData.eventData || {};
 		this.eventCooldown = eventData.eventCooldown || 0;
@@ -113,7 +117,7 @@ class EventManager {
 		}
 	}
 
-	UpdateUI(canvasElementContext) {
+	UpdateUI() {
 
 	}
 

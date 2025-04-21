@@ -1,22 +1,26 @@
 class StationManager {
 	constructor(game) {
 		this.game = game;
-		this.stationDistanceBase = 720;
-		this.stationDistanceRandom = 1080;
+		this.stationDistanceBase = 780;
+		this.stationDistanceRandom = 1280;
 		this.stationCargoBase = 3;
 		this.stationCargoRandom = 10;
 		this.stationPriceMultiplierBase = 0.8
 		this.stationPriceMultiplierRandom = 0.4
 		this.stationAmountBase = 10
 		this.stationAmountRandom = 20
-		this.stationNamePrefixList = ['橡', '翡', '钢', '水', '钻', '珍', '玛', '琥', '珊', '象', '黄', '银', '红', '蓝', '黑', '白', '绿', '紫', '青'];
-		this.stationNameMedfixList = ['', '翠', '铁', '金', '木', '矿', '晶', '石', '宝', '桦', '松', '铜', '珠', '瑙', '珀', '瑚', '牙'];
-		this.stationNameSuffixList = ['城', '堡', '谷', '镇', '山', '湾', '港', '林', '村', '场'];
+		this.stationNamePrefixList = ['', '钢', '橡', '马', '狼', '盐', '翡', '珍', '玛', '琥', '珊', '黑', '白', '金', '银', '灰', '红', '橙', '黄', '绿', '蓝', '紫', '青', '苍', '新', '旧', '水', '冰', '石', '晶', '钻', '东', '西', '南', '北', '中', '大', '小', '老', '陈', '三'];
+		this.stationNameMedfixList = ['', '江', '河', '湖', '海', '川', '林', '田', '道', '桥', '山', '玉', '晶', '瑙', '珀', '瑚', '沙', '石', '珠', '宝', '冠', '翠', '芽', '松', '桦', '木', '霜', '花', '枝', '景', '观', '金', '银', '铁', '铜', '锡', '钢', '刺', '耀', '云', '端'];
+		this.stationNameSuffixList = ['城', '堡', '场', '港', '驿', '村', '庄', '镇', '市', '关', '店', '口', '站', '头', '所', '谷', '山', '湾', '林', '滩', '中心', '基地', '枢纽', '机关', '地区'];
 	}
 
 	Init() {
 		this.stationDataCurrent = this.GenerateStation();
 		this.stationDataNext = this.GenerateStation();
+	}
+
+	FinalInit() {
+
 	}
 
 	LoadGame(gameData) {
@@ -36,34 +40,38 @@ class StationManager {
 
 	}
 
-	UpdateUI(canvasElementContext) {
+	UpdateUI() {
 
 	}
 
-	DrawStation(canvasElementContext, trainLocationBase, distanceToStationCurrent) {
-		this.game.terrainManager.DrawTerrain(canvasElementContext, trainLocationBase, distanceToStationCurrent, this.stationDataNext.terrain);
+	DrawStation(trainLocationBase, distanceToStationCurrent, trainMoveDistance) {
+		this.game.terrainManager.DrawTerrain(trainMoveDistance, this.stationDataNext.terrain);
 		// 绘制当前车站外观
 		if (this.stationDataCurrent) {
 			const stationStructureCurrent = this.stationDataCurrent.structure;
-			const stationLocationCurrent = this.game.MakeLocationData(trainLocationBase.x + distanceToStationCurrent, trainLocationBase.y);
-			this.game.DrawStructure(canvasElementContext, stationLocationCurrent, stationStructureCurrent.structureBase);
+			const stationLocationCurrent = this.game.structureManager.MakeLocationData(trainLocationBase.x + distanceToStationCurrent, trainLocationBase.y);
+			this.game.structureManager.DrawStructure(stationLocationCurrent, stationStructureCurrent.structureBase);
 		}
 		// 绘制下一个车站外观
 		if (this.stationDataNext) {
 			const stationStructureNext = this.stationDataNext.structure;
-			const stationLocationNext = this.game.MakeLocationData(trainLocationBase.x + distanceToStationCurrent + this.stationDataNext.distance, trainLocationBase.y);
-			this.game.DrawStructure(canvasElementContext, stationLocationNext, stationStructureNext.structureBase);
+			const stationLocationNext = this.game.structureManager.MakeLocationData(trainLocationBase.x + distanceToStationCurrent + this.stationDataNext.distance, trainLocationBase.y);
+			this.game.structureManager.DrawStructure(stationLocationNext, stationStructureNext.structureBase);
 		}
 	}
 
 	GenerateStation() {
-		const stationName = this.stationNamePrefixList[Math.floor(Math.random() * this.stationNamePrefixList.length)]
-			+ this.stationNameMedfixList[Math.floor(Math.random() * this.stationNameMedfixList.length)]
-			+ this.stationNameSuffixList[Math.floor(Math.random() * this.stationNameSuffixList.length)];
+		let stationName = this.stationNamePrefixList[Math.floor(Math.random() * this.stationNamePrefixList.length)]
+			+ this.stationNameMedfixList[Math.floor(Math.random() * this.stationNameMedfixList.length)];
+		while (stationName === '') {
+			stationName = this.stationNamePrefixList[Math.floor(Math.random() * this.stationNamePrefixList.length)]
+				+ this.stationNameMedfixList[Math.floor(Math.random() * this.stationNameMedfixList.length)];
+		}
+		stationName += this.stationNameSuffixList[Math.floor(Math.random() * this.stationNameSuffixList.length)];
 		const cargoList = this.game.cargoManager.GenerateStationCargo(1, this.stationCargoBase, this.stationCargoRandom, this.stationPriceMultiplierBase, this.stationPriceMultiplierRandom, this.stationAmountBase, this.stationAmountRandom);
 		const stationWidth = 100 + Math.random() * 100;
 		const stationHeight = 30 + Math.random() * 80;
-		const stationColor = this.game.MakeColorData(10 + Math.random() * 120, 10 + Math.random() * 120, 10 + Math.random() * 120, 255);
+		const stationColor = this.game.structureManager.MakeColorData(10 + Math.random() * 120, 10 + Math.random() * 120, 10 + Math.random() * 120, 255);
 		const stationData = {
 			stationName: stationName,
 			priceBuyMultiplier: 1.0,
@@ -72,7 +80,7 @@ class StationManager {
 			distance: Math.floor(this.stationDistanceBase + Math.random() * this.stationDistanceRandom),
 			terrain: this.game.terrainManager.GenerateStationTerrain(),
 			structure: {
-				structureBase: this.game.MakeStructureData(-stationWidth / 2, 0, stationWidth, stationHeight, stationColor),
+				structureBase: this.game.structureManager.MakeStructureData(-stationWidth / 2, 0, stationWidth, stationHeight, stationColor),
 			},
 		};
 		this.RecalculateWeatherEffect(stationData);
@@ -127,6 +135,14 @@ class StationManager {
 		}
 	}
 
+	GetCurrentStationName() {
+		if (this.stationDataCurrent) {
+			return this.stationDataCurrent.stationName;
+		} else {
+			return '未知站点';
+		}
+	}
+
 	GetCurrentStationCargoList() {
 		if (this.stationDataCurrent) {
 			return this.stationDataCurrent.cargoList;
@@ -139,13 +155,21 @@ class StationManager {
 		if (this.stationDataNext) {
 			return this.stationDataNext.distance;
 		} else {
-			return 100.0;
+			return 500.0;
+		}
+	}
+
+	GetNextStationTerrainData() {
+		if (this.stationDataCurrent) {
+			return this.stationDataNext.terrain;
+		} else {
+			return {};
 		}
 	}
 
 	GetSwitchStationDistance(trainLocationBase) {
 		if (this.stationDataCurrent) {
-			return -trainLocationBase.x - this.game.GetStructureDataWidth(this.stationDataCurrent.structure.structureBase);
+			return -trainLocationBase.x - this.game.structureManager.GetStructureDataWidth(this.stationDataCurrent.structure.structureBase);
 		} else {
 			return -trainLocationBase.x;
 		}

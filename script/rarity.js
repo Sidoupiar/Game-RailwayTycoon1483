@@ -79,6 +79,10 @@ class RarityManager {
 
 	}
 
+	FinalInit() {
+
+	}
+
 	LoadGame(gameData) {
 		const rarityData = gameData.rarityData || {};
 	}
@@ -91,7 +95,7 @@ class RarityManager {
 
 	}
 
-	UpdateUI(canvasElementContext) {
+	UpdateUI() {
 
 	}
 
