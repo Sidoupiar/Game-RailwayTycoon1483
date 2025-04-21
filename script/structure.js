@@ -3,19 +3,22 @@ class StructureManager {
 		this.game = game;
 		this.canvasElement = document.getElementById('gameCanvas');
 		this.canvasElementContext = this.canvasElement.getContext("2d");
+		this.fontBackground = this.MakeColorStyle(this.MakeColorData(10, 10, 10, 100));
+		this.fontForeground = this.MakeColorStyle(this.MakeColorData(240, 240, 240, 255));
 		this.structureDrawTypeContainer = {
 			square: {
 				name: '矩形',
 				Draw: function (structureManager, locationData, structureData) {
+					const innerContent = structureManager.canvasElementContext;
 					if (structureData.repeatCount < 2) {
-						structureManager.canvasElementContext.fillStyle = structureData.color;
-						structureManager.canvasElementContext.fillRect(locationData.x + structureData.xOffset, locationData.y - structureData.height + structureData.yOffset, structureData.width, structureData.height);
+						innerContent.fillStyle = structureData.color;
+						innerContent.fillRect(locationData.x + structureData.xOffset, locationData.y - structureData.height + structureData.yOffset, structureData.width, structureData.height);
 					} else {
 						let baseX = locationData.x;
 						let baseY = locationData.y;
 						for (let index = 0; index < structureData.repeatCount; ++index) {
-							structureManager.canvasElementContext.fillStyle = structureData.color;
-							structureManager.canvasElementContext.fillRect(baseX + structureData.xOffset, baseY - structureData.height + structureData.yOffset, structureData.width, structureData.height);
+							innerContent.fillStyle = structureData.color;
+							innerContent.fillRect(baseX + structureData.xOffset, baseY - structureData.height + structureData.yOffset, structureData.width, structureData.height);
 							if (structureData.repeatDirection !== 0) {
 								if (Math.abs(structureData.repeatDirection) === 1) {
 									baseX += structureData.repeatDirection * structureData.repeatSpace;
@@ -30,8 +33,8 @@ class StructureManager {
 			sin: {
 				name: '正弦',
 				Draw: function (structureManager, locationData, structureData) {
+					const innerContent = structureManager.canvasElementContext;
 					if (structureData.repeatCount < 2) {
-						const innerContent = structureManager.canvasElementContext;
 						const stepX = structureData.width / 100.0;
 						const pi_1_100 = Math.PI / 100.0;
 						const baseX = locationData.x + structureData.xOffset;
@@ -51,7 +54,6 @@ class StructureManager {
 						innerContent.stroke();
 						innerContent.closePath();
 					} else {
-						const innerContent = structureManager.canvasElementContext;
 						const stepX = structureData.width / 100.0;
 						const pi_1_100 = Math.PI / 100.0;
 						let baseX = locationData.x + structureData.xOffset;
@@ -200,11 +202,15 @@ class StructureManager {
 	}
 
 	MakeColorStyle(colorData) {
-		return `rgba(${colorData.red}, ${colorData.green}, ${colorData.blue}, ${colorData.alpha})`;
+		return `rgba(${colorData.red}, ${colorData.green}, ${colorData.blue}, ${colorData.alpha / 255.0})`;
 	}
 
 	GetStructureDataWidth(structureData) {
 		return structureData.width;
+	}
+
+	GetStructureDataHeight(structureData) {
+		return structureData.height;
 	}
 
 	IsStructureOutOfScreen(structureData, locationData) {
@@ -215,6 +221,22 @@ class StructureManager {
 		const structureDrawType = this.structureDrawTypeContainer[structureData.drawType];
 		if (structureDrawType) {
 			structureDrawType.Draw(this, locationData, structureData);
+		}
+	}
+
+	DrawText(text, locationData, yOffset) {
+		const innerContent = this.canvasElementContext;
+		innerContent.font = "20px serif";
+		const textDrawObject = innerContent.measureText(text);
+		if (textDrawObject) {
+			const fontWidth = textDrawObject.width;
+			const fontHeight = textDrawObject.fontBoundingBoxAscent + textDrawObject.fontBoundingBoxDescent;
+			const baseX = Math.floor(locationData.x - fontWidth / 2);
+			const baseY = locationData.y - yOffset;
+			innerContent.fillStyle = this.fontBackground;
+			innerContent.fillRect(baseX - 5, baseY - fontHeight - 2, fontWidth + 10, fontHeight + 4);
+			innerContent.fillStyle = this.fontForeground;
+			innerContent.fillText(text, baseX, baseY - textDrawObject.fontBoundingBoxDescent);
 		}
 	}
 }

@@ -51,12 +51,14 @@ class StationManager {
 			const stationStructureCurrent = this.stationDataCurrent.structure;
 			const stationLocationCurrent = this.game.structureManager.MakeLocationData(trainLocationBase.x + distanceToStationCurrent, trainLocationBase.y);
 			this.game.structureManager.DrawStructure(stationLocationCurrent, stationStructureCurrent.structureBase);
+			this.game.structureManager.DrawText(this.stationDataCurrent.stationName, stationLocationCurrent, this.game.structureManager.GetStructureDataHeight(stationStructureCurrent.structureBase) + 10);
 		}
 		// 绘制下一个车站外观
 		if (this.stationDataNext) {
 			const stationStructureNext = this.stationDataNext.structure;
 			const stationLocationNext = this.game.structureManager.MakeLocationData(trainLocationBase.x + distanceToStationCurrent + this.stationDataNext.distance, trainLocationBase.y);
 			this.game.structureManager.DrawStructure(stationLocationNext, stationStructureNext.structureBase);
+			this.game.structureManager.DrawText(this.stationDataNext.stationName, stationLocationNext, this.game.structureManager.GetStructureDataHeight(stationStructureNext.structureBase) + 10);
 		}
 	}
 
