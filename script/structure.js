@@ -12,13 +12,25 @@ class StructureManager {
 					const innerContent = structureManager.canvasElementContext;
 					if (structureData.repeatCount < 2) {
 						innerContent.fillStyle = structureData.color;
-						innerContent.fillRect(locationData.x + structureData.xOffset, locationData.y - structureData.height + structureData.yOffset, structureData.width, structureData.height);
+						innerContent.fillRect(locationData.x + structureData.xOffset, locationData.y + structureData.yOffset - structureData.height, structureData.width, structureData.height);
+						if (structureData.subStructureList) {
+							const subLocationData = structureManager.MakeLocationData(locationData.x + structureData.xOffset, locationData.y + structureData.yOffset);
+							for (const subStructureData of structureData.subStructureList) {
+								structureManager.DrawStructure(subLocationData, subStructureData);
+							}
+						}
 					} else {
 						let baseX = locationData.x;
 						let baseY = locationData.y;
 						for (let index = 0; index < structureData.repeatCount; ++index) {
 							innerContent.fillStyle = structureData.color;
-							innerContent.fillRect(baseX + structureData.xOffset, baseY - structureData.height + structureData.yOffset, structureData.width, structureData.height);
+							innerContent.fillRect(baseX + structureData.xOffset, baseY + structureData.yOffset - structureData.height, structureData.width, structureData.height);
+							if (structureData.subStructureList) {
+								const subLocationData = structureManager.MakeLocationData(baseX + structureData.xOffset, baseY + structureData.yOffset);
+								for (const subStructureData of structureData.subStructureList) {
+									structureManager.DrawStructure(subLocationData, subStructureData);
+								}
+							}
 							if (structureData.repeatDirection !== 0) {
 								if (Math.abs(structureData.repeatDirection) === 1) {
 									baseX += structureData.repeatDirection * structureData.repeatSpace;
@@ -44,8 +56,9 @@ class StructureManager {
 						innerContent.moveTo(baseX, baseY);
 						for (let currentX = baseX, frequency = 0; currentX < maxX; currentX += stepX, frequency += pi_1_100) {
 							const currentY = baseY - structureData.height * Math.sin(frequency);
-							innerContent.lineTo(Math.floor(currentX), Math.floor(currentY));
+							innerContent.lineTo(currentX, currentY);
 						}
+						innerContent.lineTo(maxX, baseY);
 						//innerContent.lineTo(baseX, baseY); // 封底
 						innerContent.fillStyle = structureData.color;
 						innerContent.fill();
@@ -53,6 +66,12 @@ class StructureManager {
 						innerContent.strokeStyle = structureData.colorDark;
 						innerContent.stroke();
 						innerContent.closePath();
+						if (structureData.subStructureList) {
+							const subLocationData = structureManager.MakeLocationData(baseX, baseY);
+							for (const subStructureData of structureData.subStructureList) {
+								structureManager.DrawStructure(subLocationData, subStructureData);
+							}
+						}
 					} else {
 						const stepX = structureData.width / 100.0;
 						const pi_1_100 = Math.PI / 100.0;
@@ -64,8 +83,9 @@ class StructureManager {
 							innerContent.moveTo(baseX, baseY);
 							for (let currentX = baseX, frequency = 0; currentX < maxX; currentX += stepX, frequency += pi_1_100) {
 								const currentY = baseY - structureData.height * Math.sin(frequency);
-								innerContent.lineTo(Math.floor(currentX), Math.floor(currentY));
+								innerContent.lineTo(currentX, currentY);
 							}
+							innerContent.lineTo(maxX, baseY);
 							//innerContent.lineTo(baseX, baseY); // 封底
 							innerContent.fillStyle = structureData.color;
 							innerContent.fill();
@@ -73,6 +93,12 @@ class StructureManager {
 							innerContent.strokeStyle = structureData.colorDark;
 							innerContent.stroke();
 							innerContent.closePath();
+							if (structureData.subStructureList) {
+								const subLocationData = structureManager.MakeLocationData(baseX, baseY);
+								for (const subStructureData of structureData.subStructureList) {
+									structureManager.DrawStructure(subLocationData, subStructureData);
+								}
+							}
 							if (structureData.repeatDirection !== 0) {
 								if (Math.abs(structureData.repeatDirection) === 1) {
 									const extendX = structureData.repeatDirection * structureData.repeatSpace;
@@ -118,13 +144,13 @@ class StructureManager {
 	}
 
 	ClearContent() {
-		this.canvasElementContext.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height)
+		this.canvasElementContext.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
 	}
 
 	MakeLocationData(xOffset, yOffset) {
 		return {
-			x: Math.floor(xOffset),
-			y: Math.floor(yOffset),
+			x: xOffset, // Math.floor(xOffset),
+			y: yOffset, // Math.floor(yOffset),
 		};
 	}
 
@@ -150,17 +176,18 @@ class StructureManager {
 	MakeStructureData(xOffset, yOffset, width, height, colorData) {
 		return {
 			drawType: 'square',
-			xOffset: Math.floor(xOffset),
-			yOffset: Math.floor(yOffset),
-			width: Math.floor(width),
-			height: Math.floor(height),
+			xOffset: xOffset, // Math.floor(xOffset),
+			yOffset: yOffset, // Math.floor(yOffset),
+			width: width, // Math.floor(width),
+			height: height, // Math.floor(height),
 			color: this.MakeColorStyle(colorData),
 			colorDark: this.MakeColorStyle(this.MakeColorData_Drak(colorData, 0.4)),
-			xMerged: 0.0,
-			yMerged: 0.0,
+			// xMerged: 0.0,
+			// yMerged: 0.0,
 			repeatCount: 1,
 			repeatSpace: 0,
 			repeatDirection: 1,
+			subStructureList: null,
 		};
 	}
 
@@ -176,27 +203,58 @@ class StructureManager {
 
 	ModifyStructureData_RepeatCount(structureData, repeatCount, repeatSpace, repeatDirection) {
 		structureData.repeatCount = repeatCount;
-		structureData.repeatSpace = repeatSpace;
+		structureData.repeatSpace = repeatSpace; // Math.floor(repeatSpace);
 		structureData.repeatDirection = repeatDirection;
 		return structureData;
 	}
 
 	ModifyStructureData_MoveX(structureData, xMerged) {
-		structureData.xMerged += xMerged;
-		if (Math.floor(Math.abs(structureData.xMerged)) > 0) {
-			const xOffset = Math.floor(structureData.xMerged);
-			structureData.xOffset += xOffset;
-			structureData.xMerged -= xOffset;
-		}
+		structureData.xOffset += xMerged;
+		// structureData.xMerged += xMerged;
+		// if (Math.floor(Math.abs(structureData.xMerged)) > 0) {
+		// 	const xOffset = Math.floor(structureData.xMerged);
+		// 	structureData.xOffset += xOffset;
+		// 	structureData.xMerged -= xOffset;
+		// }
 		return structureData;
 	}
 
 	ModifyStructureData_MoveY(structureData, yMerged) {
-		structureData.yMerged += yMerged;
-		if (Math.floor(Math.abs(structureData.yMerged)) > 0) {
-			const yOffset = Math.floor(structureData.yMerged);
-			structureData.yOffset += yOffset;
-			structureData.yMerged -= yOffset;
+		structureData.yOffset += yMerged;
+		// structureData.yMerged += yMerged;
+		// if (Math.floor(Math.abs(structureData.yMerged)) > 0) {
+		// 	const yOffset = Math.floor(structureData.yMerged);
+		// 	structureData.yOffset += yOffset;
+		// 	structureData.yMerged -= yOffset;
+		// }
+		return structureData;
+	}
+
+	ModifyStructureData_MakeSubStructureData(structureData, xOffset, yOffset, width, height, colorData) {
+		if (structureData.subStructureList) {
+			structureData.subStructureList.push(this.MakeStructureData(xOffset, yOffset, width, height, colorData));
+		} else {
+			structureData.subStructureList = [
+				this.MakeStructureData(xOffset, yOffset, width, height, colorData),
+			];
+		}
+		return structureData;
+	}
+
+	ModifyStructureData_AddSubStructureData(structureData, subStructureData) {
+		if (structureData.subStructureList) {
+			structureData.subStructureList.push(subStructureData);
+		} else {
+			structureData.subStructureList = [
+				subStructureData,
+			];
+		}
+		return structureData;
+	}
+
+	ModifyStructureData_AddSubStructureDataList(structureData, subStructureDataList) {
+		for (const subStructureData of subStructureDataList) {
+			this.ModifyStructureData_AddSubStructureData(structureData, subStructureData);
 		}
 		return structureData;
 	}
@@ -231,7 +289,7 @@ class StructureManager {
 		if (textDrawObject) {
 			const fontWidth = textDrawObject.width;
 			const fontHeight = textDrawObject.fontBoundingBoxAscent + textDrawObject.fontBoundingBoxDescent;
-			const baseX = Math.floor(locationData.x - fontWidth / 2);
+			const baseX = locationData.x - fontWidth / 2; // Math.floor(locationData.x - fontWidth / 2);
 			const baseY = locationData.y - yOffset;
 			innerContent.fillStyle = this.fontBackground;
 			innerContent.fillRect(baseX - 5, baseY - fontHeight - 2, fontWidth + 10, fontHeight + 4);

@@ -82,7 +82,7 @@ class StationManager {
 			distance: Math.floor(this.stationDistanceBase + Math.random() * this.stationDistanceRandom),
 			terrain: this.game.terrainManager.GenerateStationTerrain(),
 			structure: {
-				structureBase: this.game.structureManager.MakeStructureData(-stationWidth / 2, 0, stationWidth, stationHeight, stationColor),
+				structureBase: this.game.structureManager.MakeStructureData(-stationWidth / 2, 3, stationWidth, stationHeight, stationColor),
 			},
 		};
 		this.RecalculateWeatherEffect(stationData);

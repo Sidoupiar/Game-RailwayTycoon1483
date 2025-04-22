@@ -53,21 +53,79 @@ class TrainManager {
 			}
 		}
 		this.trainLocationBase = this.game.structureManager.MakeLocationData(180, 210);
+		this.roadStructureBase = this.game.structureManager.MakeStructureData(-180, 8, this.game.structureManager.GetScreenWidth(), 5, this.game.structureManager.MakeColorData(10, 10, 10, 255));
 		this.trainStyleTypeList = [
 			{
 				id: 'normal',
 				name: '普通',
-				structureBase: this.game.structureManager.ModifyStructureData_RepeatCount(this.game.structureManager.MakeStructureData(-45, 0, 90, 26, this.game.structureManager.MakeColorData(220, 120, 0, 255)), 3, 93, -1),
+				structureBase: this.game.structureManager.ModifyStructureData_AddSubStructureDataList(
+					this.game.structureManager.ModifyStructureData_RepeatCount(
+						this.game.structureManager.MakeStructureData(-45, 0, 90, 26, this.game.structureManager.MakeColorData(170, 120, 0, 255)),
+						3, 93, -1
+					),
+					[
+						this.game.structureManager.ModifyStructureData_RepeatCount(
+							this.game.structureManager.MakeStructureData(14, -15, 5, 5, this.game.structureManager.MakeColorData(0, 120, 220, 255)),
+							4, 19, 1
+						),
+						this.game.structureManager.ModifyStructureData_RepeatCount(
+							this.game.structureManager.MakeStructureData(10, 2, 4, 4, this.game.structureManager.MakeColorData(20, 20, 20, 255)),
+							3, 6, 1
+						),
+						this.game.structureManager.ModifyStructureData_RepeatCount(
+							this.game.structureManager.MakeStructureData(76, 2, 4, 4, this.game.structureManager.MakeColorData(20, 20, 20, 255)),
+							3, 6, -1
+						),
+					]
+				),
 			},
 			{
 				id: 'advanced',
 				name: '高级',
-				structureBase: this.game.structureManager.ModifyStructureData_RepeatCount(this.game.structureManager.MakeStructureData(-45, 0, 90, 26, this.game.structureManager.MakeColorData(120, 0, 220, 255)), 3, 93, -1),
+				structureBase: this.game.structureManager.ModifyStructureData_AddSubStructureDataList(
+					this.game.structureManager.ModifyStructureData_RepeatCount(
+						this.game.structureManager.MakeStructureData(-45, 0, 90, 26, this.game.structureManager.MakeColorData(120, 0, 170, 255)),
+						3, 93, -1
+					),
+					[
+						this.game.structureManager.ModifyStructureData_RepeatCount(
+							this.game.structureManager.MakeStructureData(14, -15, 5, 5, this.game.structureManager.MakeColorData(0, 120, 220, 255)),
+							4, 19, 1
+						),
+						this.game.structureManager.ModifyStructureData_RepeatCount(
+							this.game.structureManager.MakeStructureData(10, 2, 4, 4, this.game.structureManager.MakeColorData(20, 20, 20, 255)),
+							3, 6, 1
+						),
+						this.game.structureManager.ModifyStructureData_RepeatCount(
+							this.game.structureManager.MakeStructureData(76, 2, 4, 4, this.game.structureManager.MakeColorData(20, 20, 20, 255)),
+							3, 6, -1
+						),
+					]
+				),
 			},
 			{
 				id: 'rare',
 				name: '稀有',
-				structureBase: this.game.structureManager.ModifyStructureData_RepeatCount(this.game.structureManager.MakeStructureData(-45, 0, 90, 26, this.game.structureManager.MakeColorData(0, 220, 120, 255)), 3, 93, -1),
+				structureBase: this.game.structureManager.ModifyStructureData_AddSubStructureDataList(
+					this.game.structureManager.ModifyStructureData_RepeatCount(
+						this.game.structureManager.MakeStructureData(-45, 0, 90, 26, this.game.structureManager.MakeColorData(0, 170, 120, 255)),
+						3, 93, -1
+					),
+					[
+						this.game.structureManager.ModifyStructureData_RepeatCount(
+							this.game.structureManager.MakeStructureData(14, -15, 5, 5, this.game.structureManager.MakeColorData(0, 120, 220, 255)),
+							4, 19, 1
+						),
+						this.game.structureManager.ModifyStructureData_RepeatCount(
+							this.game.structureManager.MakeStructureData(10, 2, 4, 4, this.game.structureManager.MakeColorData(20, 20, 20, 255)),
+							3, 6, 1
+						),
+						this.game.structureManager.ModifyStructureData_RepeatCount(
+							this.game.structureManager.MakeStructureData(76, 2, 4, 4, this.game.structureManager.MakeColorData(20, 20, 20, 255)),
+							3, 6, -1
+						),
+					]
+				),
 			},
 		];
 		this.trainStyleTypeContainer = this.game.MakeTypeContainer(this.trainStyleTypeList);
@@ -189,10 +247,12 @@ class TrainManager {
 	}
 
 	UpdateUI() {
-		this.game.stationManager.DrawStation(this.trainLocationBase, Math.floor(this.distanceToStationCurrent), this.trainMoveDistance);
+		this.game.stationManager.DrawStation(this.trainLocationBase, this.distanceToStationCurrent, this.trainMoveDistance);
 		// 绘制火车外观
 		const trainStyleType = this.trainStyleTypeContainer[this.trainStyleTypeID];
 		this.game.structureManager.DrawStructure(this.trainLocationBase, trainStyleType.structureBase);
+		// 绘制路面外观
+		this.game.structureManager.DrawStructure(this.trainLocationBase, this.roadStructureBase);
 		// 更新控件
 		if (this.needUpdateUIControl) {
 			this.needUpdateUIControl = false;

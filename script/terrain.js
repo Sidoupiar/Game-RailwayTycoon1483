@@ -11,11 +11,14 @@ class TerrainManager {
 				CreateStructureData: function (terrainManager, terrainDataStyle, layerData) {
 					const positionY = Math.random() * 10 - layerData.baseHeightOffset;
 					const realWidth = (terrainDataStyle.peakWidth * (1.1 - Math.random() * 0.2)) * layerData.baseScale;
-					const realHeight = (terrainDataStyle.peakHeight + Math.random() * 10 - 5) * layerData.baseScale;
-					const peakColor = terrainManager.game.structureManager.MakeColorData(0, 210, 100, 255);
+					const realHeight = (terrainDataStyle.peakHeight + Math.random() * 10 - 5) * layerData.baseScale * layerData.baseHeightScale;
+					const peakColor = terrainManager.game.structureManager.MakeColorData(0, 180, 100, 255);
 					const structureData = terrainManager.game.structureManager.MakeStructureData(layerData.positionGenerate, positionY, realWidth, realHeight, peakColor);
 					return [
-						terrainManager.game.structureManager.ModifyStructureData_DrawType_Sin(structureData),
+						terrainManager.game.structureManager.ModifyStructureData_AddSubStructureData(
+							terrainManager.game.structureManager.ModifyStructureData_DrawType_Sin(structureData),
+							terrainManager.game.structureManager.MakeStructureData(0, 14 + layerData.lowerBackYOffset - positionY, realWidth, 15 + layerData.lowerBackYOffset - positionY, peakColor)
+						),
 						terrainDataStyle.peakWidth * 0.65 * layerData.baseScale,
 					];
 				}
@@ -29,11 +32,14 @@ class TerrainManager {
 				CreateStructureData: function (terrainManager, terrainDataStyle, layerData) {
 					const positionY = Math.random() * 20 - 10 - layerData.baseHeightOffset;
 					const realWidth = (terrainDataStyle.peakWidth * (1.1 - Math.random() * 0.2)) * layerData.baseScale;
-					const realHeight = (terrainDataStyle.peakHeight + Math.random() * 20 - 10) * layerData.baseScale;
-					const peakColor = terrainManager.game.structureManager.MakeColorData(0, 130, 70, 255);
+					const realHeight = (terrainDataStyle.peakHeight + Math.random() * 20 - 10) * layerData.baseScale * layerData.baseHeightScale;
+					const peakColor = terrainManager.game.structureManager.MakeColorData(0, 130, 80, 255);
 					const structureData = terrainManager.game.structureManager.MakeStructureData(layerData.positionGenerate, positionY, realWidth, realHeight, peakColor);
 					return [
-						terrainManager.game.structureManager.ModifyStructureData_DrawType_Sin(structureData),
+						terrainManager.game.structureManager.ModifyStructureData_AddSubStructureData(
+							terrainManager.game.structureManager.ModifyStructureData_DrawType_Sin(structureData),
+							terrainManager.game.structureManager.MakeStructureData(0, 14 + layerData.lowerBackYOffset - positionY, realWidth, 15 + layerData.lowerBackYOffset - positionY, peakColor)
+						),
 						terrainDataStyle.peakWidth * 0.85 * layerData.baseScale,
 					];
 				}
@@ -47,11 +53,14 @@ class TerrainManager {
 				CreateStructureData: function (terrainManager, terrainDataStyle, layerData) {
 					const positionY = Math.random() * 14 - 4 - layerData.baseHeightOffset;
 					const realWidth = (terrainDataStyle.peakWidth * (1.1 - Math.random() * 0.2)) * layerData.baseScale;
-					const realHeight = (terrainDataStyle.peakHeight + Math.random() * 14 - 7) * layerData.baseScale;
+					const realHeight = (terrainDataStyle.peakHeight + Math.random() * 14 - 7) * layerData.baseScale * layerData.baseHeightScale;
 					const peakColor = terrainManager.game.structureManager.MakeColorData(180, 140, 0, 255);
 					const structureData = terrainManager.game.structureManager.MakeStructureData(layerData.positionGenerate, positionY, realWidth, realHeight, peakColor);
 					return [
-						terrainManager.game.structureManager.ModifyStructureData_DrawType_Sin(structureData),
+						terrainManager.game.structureManager.ModifyStructureData_AddSubStructureData(
+							terrainManager.game.structureManager.ModifyStructureData_DrawType_Sin(structureData),
+							terrainManager.game.structureManager.MakeStructureData(0, 14 + layerData.lowerBackYOffset - positionY, realWidth, 15 + layerData.lowerBackYOffset - positionY, peakColor)
+						),
 						terrainDataStyle.peakWidth * 0.6 * layerData.baseScale,
 					];
 				}
@@ -65,33 +74,40 @@ class TerrainManager {
 		this.currentPeakListLayerContainer = [
 			{
 				layerIndex: 4,
-				positionGenerate: 0,
+				positionGenerate: -300,
 				baseScale: 0.4,
-				baseHeightOffset: 60,
+				baseHeightScale: 1.0, // 1.75,
+				baseHeightOffset: 60, // 43,
+				lowerBackYOffset: 0,
 				moveSpeedMultiplier: 0.4,
 				list: [],
 			},
 			{
 				layerIndex: 3,
-				positionGenerate: 0,
+				positionGenerate: -300,
 				baseScale: 0.6,
-				baseHeightOffset: 43,
+				baseHeightScale: 1.0, // 1.5,
+				baseHeightOffset: 43, // 32,
 				moveSpeedMultiplier: 0.6,
 				list: [],
 			},
 			{
 				layerIndex: 2,
-				positionGenerate: 0,
+				positionGenerate: -300,
 				baseScale: 0.8,
-				baseHeightOffset: 25,
+				baseHeightScale: 1.0, // 1.25,
+				baseHeightOffset: 25, // 20,
+				lowerBackYOffset: 0,
 				moveSpeedMultiplier: 0.8,
 				list: [],
 			},
 			{
 				layerIndex: 1,
-				positionGenerate: 0,
+				positionGenerate: -300,
 				baseScale: 1.0,
+				baseHeightScale: 1.0,
 				baseHeightOffset: 0,
+				lowerBackYOffset: 16,
 				moveSpeedMultiplier: 1.0,
 				list: [],
 			},
