@@ -2,9 +2,9 @@ class MainGameManager {
 	constructor() {
 		this.gameSaveID = 'railwayTycoonSave';
 		// 用于清除存档
-		//localStorage.setItem(this.gameSaveID, false);
+		localStorage.removeItem(this.gameSaveID);
 		// 初始化数据
-		this.money = 20000;
+		this.money = 100000;
 		this.gameSpeed = 1;
 		this.structureManager = new StructureManager(this);
 		this.rarityManager = new RarityManager(this);
@@ -58,7 +58,7 @@ class MainGameManager {
 		const savedGame = localStorage.getItem(this.gameSaveID);
 		if (savedGame) {
 			const gameData = JSON.parse(savedGame);
-			this.money = gameData.money || 20000;
+			this.money = gameData.money || 100000;
 			this.gameSpeed = gameData.gameSpeed || 1;
 			this.structureManager.LoadGame(gameData);
 			this.rarityManager.LoadGame(gameData)
