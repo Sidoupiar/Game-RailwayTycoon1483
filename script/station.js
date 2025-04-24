@@ -1,8 +1,8 @@
 class StationManager {
 	constructor(game) {
 		this.game = game;
-		this.stationDistanceBase = 780;
-		this.stationDistanceRandom = 1280;
+		this.stationDistanceBase = 1650;
+		this.stationDistanceRandom = 1650;
 		this.stationCargoBase = 3;
 		this.stationCargoRandom = 10;
 		this.stationPriceMultiplierBase = 0.8
