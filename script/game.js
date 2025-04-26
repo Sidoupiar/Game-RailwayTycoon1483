@@ -182,7 +182,9 @@ class MainGameManager {
 
 	MakeTypeContainer(typeList) {
 		const container = {};
-		for (const type of typeList) {
+		for (let index = 0, count = typeList.length; index < count; ++index) {
+			const type = typeList[index];
+			type.index = index;
 			container[type.id] = type;
 		}
 		return container;

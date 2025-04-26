@@ -447,16 +447,17 @@ class CargoManager {
 		}
 	}
 
-	GenerateStationCargo(rarityLevelMin, countBase, countRandom, priceMultiplierBase, priceMultiplierRandom, amountBase, amountRandom) {
+	GenerateStationCargo(rarityLevelMin, countBase, countRandom, countEmptyBase, countEmptyRandom, priceMultiplierBase, priceMultiplierRandom, amountBase, amountRandom) {
 		const availableCargoList = [];
 		if (rarityLevelMin > this.game.rarityManager.GetMaxRarityLevel()) {
 			return availableCargoList;
 		}
 		const cargoCount = Math.floor(countBase + Math.random() * countRandom);
+		const cargoEmptyCount = Math.floor(countEmptyBase + Math.random() * countEmptyRandom);
 		let generateCargoTryCountTotal = 0;
-		for (let index = 0; index < cargoCount; ++index) {
+		for (let index = 0, maxCount = cargoCount + cargoEmptyCount; index < maxCount; ++index) {
 			const cargoType = this.cargoTypeList[Math.floor(Math.random() * this.cargoTypeList.length)];
-			// 判断稀有度等级
+			// 判断货物的稀有度等级
 			if (rarityLevelMin > this.game.rarityManager.GetRarityLevel(cargoType.rarity)) {
 				--index;
 				++generateCargoTryCountTotal;
@@ -466,7 +467,7 @@ class CargoManager {
 					continue;
 				}
 			}
-			// 去除重复货物
+			// 去除重复的货物
 			let cargoSameFlag = false;
 			for (const stationCargoData of availableCargoList) {
 				if (cargoType.id === stationCargoData.cargoID) {
@@ -483,18 +484,28 @@ class CargoManager {
 					continue;
 				}
 			}
+			// 生成货物数据
+			generateCargoTryCountTotal = 0;
 			const priceMultiplier = this.CalculatePriceMultiplier(cargoType.id, priceMultiplierBase, priceMultiplierRandom);
 			const priceBase = Math.floor(cargoType.basePrice * priceMultiplier * (0.9 + Math.random() * 0.5));
-			const amount = Math.floor(amountBase + Math.random() * amountRandom);
+			let amount = Math.floor(amountBase + Math.random() * amountRandom);
+			let amountMax;
+			if (index < cargoCount) {
+				amountMax = Math.max(amount, Math.floor(amountBase + Math.random() * amountRandom) + 2);
+			} else {
+				amountMax = Math.abs(amount - Math.floor(amountBase + Math.random() * amountRandom)) + 2;
+				amount = 0;
+			}
 			availableCargoList.push({
 				cargoID: cargoType.id,
 				isRare: false,
 				priceBuyBase: priceBase,
 				priceSellBase: Math.floor(Math.min(priceBase * 0.95, cargoType.basePrice * priceMultiplier * (0.7 + Math.random() * 0.5))),
 				amount: amount,
-				amountMax: Math.max(amount, Math.floor(amountBase + Math.random() * amountRandom) + 2),
+				amountMax: amountMax,
 			});
 		}
+		this.SortCargo(availableCargoList);
 		return availableCargoList;
 	}
 
@@ -508,5 +519,19 @@ class CargoManager {
 		// 稀有度带来的价格影响
 		this.game.rarityManager.CalculatePriceMultiplier(cargoType.rarity, multiplier);
 		return multiplier;
+	}
+
+	SortCargo(cargoList) {
+		if (cargoList) {
+			cargoList.sort((elementA, elementB) => {
+				if (elementA.index == elementB.index) {
+					return 0;
+				} else if (elementA.index > elementB.index) {
+					return 1;
+				} else {
+					return -1;
+				}
+			});
+		}
 	}
 }

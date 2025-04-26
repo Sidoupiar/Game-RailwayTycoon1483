@@ -5,12 +5,14 @@ class StationManager {
 		this.stationDistanceRandom = 2400;
 		this.stationCargoBase = 3;
 		this.stationCargoRandom = 10;
+		this.stationCargoEmptyBase = 3;
+		this.stationCargoEmptyRandom = 10;
 		this.stationPriceMultiplierBase = 0.8
 		this.stationPriceMultiplierRandom = 0.4
 		this.stationAmountBase = 10
 		this.stationAmountRandom = 20
-		this.stationNamePrefixList = ['', '钢', '橡', '马', '狼', '盐', '翡', '珍', '玛', '琥', '珊', '黑', '白', '金', '银', '灰', '红', '橙', '黄', '绿', '蓝', '紫', '青', '苍', '新', '旧', '水', '冰', '石', '晶', '钻', '东', '西', '南', '北', '中', '大', '小', '老', '陈', '三'];
-		this.stationNameMedfixList = ['', '江', '河', '湖', '海', '川', '林', '田', '道', '桥', '山', '玉', '晶', '瑙', '珀', '瑚', '沙', '石', '珠', '宝', '冠', '翠', '芽', '松', '桦', '木', '霜', '花', '枝', '景', '观', '金', '银', '铁', '铜', '锡', '钢', '刺', '耀', '云', '端'];
+		this.stationNamePrefixList = ['', '黑', '白', '金', '银', '灰', '红', '橙', '黄', '绿', '蓝', '紫', '青', '苍', '新', '旧', '赤', '古', '枯', '烂', '酸', '东', '西', '南', '北', '中', '大', '小', '老', '陈', '三', '第一', '第二', '第三', '第四', '第五'];
+		this.stationNameMedfixList = ['', '江', '河', '湖', '海', '川', '林', '田', '桥', '道', '山', '玉', '晶', '瑙', '珀', '瑚', '沙', '石', '珠', '宝', '冠', '翠', '芽', '松', '桦', '木', '霜', '花', '枝', '景', '观', '金', '银', '铁', '铜', '锡', '钢', '刺', '星', '云', '端'];
 		this.stationNameSuffixList = ['城', '堡', '场', '港', '驿', '村', '庄', '镇', '市', '关', '店', '口', '站', '头', '所', '谷', '山', '湾', '林', '滩', '中心', '基地', '枢纽', '机关', '地区'];
 	}
 
@@ -63,14 +65,16 @@ class StationManager {
 	}
 
 	GenerateStation() {
-		let stationName = this.stationNamePrefixList[Math.floor(Math.random() * this.stationNamePrefixList.length)]
-			+ this.stationNameMedfixList[Math.floor(Math.random() * this.stationNameMedfixList.length)];
-		while (stationName === '') {
+		let stationName = '';
+		while (true) {
 			stationName = this.stationNamePrefixList[Math.floor(Math.random() * this.stationNamePrefixList.length)]
 				+ this.stationNameMedfixList[Math.floor(Math.random() * this.stationNameMedfixList.length)];
+			if (stationName !== '') {
+				break;
+			}
 		}
 		stationName += this.stationNameSuffixList[Math.floor(Math.random() * this.stationNameSuffixList.length)];
-		const cargoList = this.game.cargoManager.GenerateStationCargo(1, this.stationCargoBase, this.stationCargoRandom, this.stationPriceMultiplierBase, this.stationPriceMultiplierRandom, this.stationAmountBase, this.stationAmountRandom);
+		const cargoList = this.game.cargoManager.GenerateStationCargo(1, this.stationCargoBase, this.stationCargoRandom, this.stationCargoEmptyBase, this.stationCargoEmptyRandom, this.stationPriceMultiplierBase, this.stationPriceMultiplierRandom, this.stationAmountBase, this.stationAmountRandom);
 		const stationWidth = 100 + Math.random() * 100;
 		const stationHeight = 30 + Math.random() * 80;
 		const stationColor = this.game.structureManager.MakeColorData(10 + Math.random() * 120, 10 + Math.random() * 120, 10 + Math.random() * 120, 255);
@@ -114,6 +118,7 @@ class StationManager {
 	CurrentStationAppendCargo(rarityLevelMin) {
 		if (this.stationDataCurrent) {
 			const cargoList = this.game.cargoManager.GenerateStationCargo(rarityLevelMin, 1, 4, this.stationPriceMultiplierBase, this.stationPriceMultiplierRandom, this.stationAmountBase, this.stationAmountRandom);
+			let needSortFlag = false;
 			for (const cargoData of cargoList) {
 				let setFlag = false;
 				for (const cargoDataCurrent of this.stationDataCurrent.cargoList) {
@@ -131,7 +136,11 @@ class StationManager {
 					cargoData.priceBuyBase *= 1.5;
 					cargoData.priceSellBase *= 1.5;
 					this.stationDataCurrent.cargoList.push(cargoData);
+					needSortFlag = true;
 				}
+			}
+			if (needSortFlag) {
+				this.game.cargoManager.SortCargo(this.stationDataCurrent.cargoList);
 			}
 			this.RecalculateWeatherEffect(this.stationDataCurrent);
 		}
